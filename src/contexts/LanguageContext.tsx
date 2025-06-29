@@ -12,7 +12,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations = {
   en: {
     // Header
-    'app.title': 'PDFRide',
+    'app.title': 'LovePDF',
     'app.subtitle': 'Free PDF Tools for Pakistan',
     'header.language': 'اردو',
     'header.dashboard': 'Dashboard',

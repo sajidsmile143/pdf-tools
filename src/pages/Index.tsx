@@ -11,28 +11,7 @@ const Index = () => {
   const { language, t } = useLanguage();
 
   const tools = [
-    // Core PDF tools
-    {
-      id: 'merge',
-      name: 'tools.merge',
-      desc: 'tools.merge.desc',
-      path: '/merge',
-      color: 'from-red-400 to-red-600'
-    },
-    {
-      id: 'split',
-      name: 'tools.split',
-      desc: 'tools.split.desc',
-      path: '/split',
-      color: 'from-blue-400 to-blue-600'
-    },
-    {
-      id: 'compress',
-      name: 'tools.compress',
-      desc: 'tools.compress.desc',
-      path: '/compress',
-      color: 'from-green-400 to-green-600'
-    },
+    
     // PDF to other formats
     {
       id: 'pdf-to-word',
@@ -179,7 +158,29 @@ const Index = () => {
       desc: 'Crop PDF pages to custom size',
       path: '/crop-pdf',
       color: 'from-violet-400 to-violet-600'
-    }
+    },
+    // Core PDF tools
+    {
+      id: 'merge',
+      name: 'tools.merge',
+      desc: 'tools.merge.desc',
+      path: '/merge',
+      color: 'from-red-400 to-red-600'
+    },
+    {
+      id: 'split',
+      name: 'tools.split',
+      desc: 'tools.split.desc',
+      path: '/split',
+      color: 'from-blue-400 to-blue-600'
+    },
+    {
+      id: 'compress',
+      name: 'tools.compress',
+      desc: 'tools.compress.desc',
+      path: '/compress',
+      color: 'from-green-400 to-green-600'
+    },
   ];
 
   return (
@@ -292,10 +293,10 @@ const Index = () => {
               </h3>
               <div className="space-y-2 text-gray-400">
                 <p className={language === 'ur' ? 'font-urdu' : 'font-inter'}>
-                  {language === 'ur' ? 'کراچی، پاکستان' : 'Karachi, Pakistan'}
+                  {language === 'ur' ? 'لاہور، پاکستان ': 'Lahore, Pakistan'}
                 </p>
                 <p className={language === 'ur' ? 'font-urdu' : 'font-inter'}>
-                  support@pdfride.pk
+                  sajidsmile143@gmail.com
                 </p>
               </div>
             </div>
