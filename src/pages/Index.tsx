@@ -304,7 +304,7 @@ const Index = () => {
           <div className={`border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 ${
             language === 'ur' ? 'font-urdu' : 'font-inter'
           }`}>
-            <p>© 2024 PDFRide. {language === 'ur' ? 'تمام حقوق محفوظ ہیں۔' : 'All rights reserved.'}</p>
+            <p>© 2024 LovePDF. {language === 'ur' ? 'تمام حقوق محفوظ ہیں۔' : 'All rights reserved.'}</p>
           </div>
         </div>
       </footer>
