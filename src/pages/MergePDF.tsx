@@ -1,51 +1,46 @@
-
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
-import { Upload, FileText, Download, ArrowLeft, X, GripVertical } from 'lucide-react';
+import FileUploadArea from '@/components/FileUploadArea';
+import { FileText, Download, ArrowLeft, X, GripVertical } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { mergePDFs, downloadPDF } from '@/utils/pdfUtils';
 import { toast } from 'sonner';
 
 const MergePDF = () => {
   const { language, t } = useLanguage();
-  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [processing, setProcessing] = useState(false);
   const [processed, setProcessed] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const pdfFiles = acceptedFiles.filter(file => file.type === 'application/pdf');
-    if (pdfFiles.length !== acceptedFiles.length) {
+  const handleFileSelect = (fileList: FileList) => {
+    const selectedFiles = Array.from(fileList);
+    const pdfFiles = selectedFiles.filter(file => file.type === 'application/pdf');
+    
+    if (pdfFiles.length !== selectedFiles.length) {
       toast.warning(language === 'ur' ? 
         'صرف PDF فائلیں قبول ہیں' : 
         'Only PDF files are accepted'
       );
     }
+    
     setFiles(prev => [...prev, ...pdfFiles]);
-  }, [language]);
+    console.log('Files selected:', pdfFiles.length);
+  };
 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const moveFile = (fromIndex: number, toIndex: number) => {
-    setFiles(prev => {
-      const newFiles = [...prev];
-      const [removed] = newFiles.splice(fromIndex, 1);
-      newFiles.splice(toIndex, 0, removed);
-      return newFiles;
-    });
-  };
-
   const handleMerge = async () => {
+    console.log('Merge button clicked, files:', files.length);
+    
     if (files.length < 2) {
       toast.error(language === 'ur' ? 
         'کم از کم 2 فائلیں ضروری ہیں' : 
-        'At least 2 files are required'
+        'At least 2 فائلیں ضروری ہیں'
       );
       return;
     }
@@ -53,10 +48,11 @@ const MergePDF = () => {
     setProcessing(true);
     
     try {
+      console.log('Starting merge process...');
       const mergedPdfBytes = await mergePDFs(files);
       const filename = `merged-${Date.now()}.pdf`;
       
-      // Download the file directly - no need to store for free users
+      // Download the file directly
       downloadPDF(mergedPdfBytes, filename);
       
       toast.success(language === 'ur' ? 
@@ -76,12 +72,6 @@ const MergePDF = () => {
     setProcessing(false);
   };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      onDrop(Array.from(e.target.files));
-    }
-  };
-
   const resetTool = () => {
     setFiles([]);
     setProcessed(false);
@@ -97,7 +87,7 @@ const MergePDF = () => {
           <Link to="/" className="inline-flex items-center text-pakistan-green-600 hover:text-pakistan-green-700 mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
             <span className={language === 'ur' ? 'font-urdu' : 'font-inter'}>
-              {t('common.back')}
+              {language === 'ur' ? 'واپس' : 'Back'}
             </span>
           </Link>
 
@@ -107,7 +97,7 @@ const MergePDF = () => {
               <FileText className="w-8 h-8 text-white" />
             </div>
             <h1 className={`text-4xl font-bold mb-4 ${language === 'ur' ? 'font-urdu' : 'font-inter'}`}>
-              {t('tools.merge')}
+              {language === 'ur' ? 'PDF جوڑیں' : 'Merge PDF'}
             </h1>
             <p className={`text-gray-600 text-lg ${language === 'ur' ? 'font-urdu' : 'font-inter'}`}>
               {language === 'ur' ? 
@@ -122,30 +112,14 @@ const MergePDF = () => {
               {/* Upload Area */}
               <Card className="mb-8">
                 <CardContent className="p-8">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pakistan-green-400 transition-colors">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className={`text-lg font-semibold mb-2 ${language === 'ur' ? 'font-urdu' : 'font-inter'}`}>
-                      {language === 'ur' ? 'پی ڈی ایف فائلیں اپ لوڈ کریں' : 'Upload PDF Files'}
-                    </h3>
-                    <p className={`text-gray-500 mb-4 ${language === 'ur' ? 'font-urdu' : 'font-inter'}`}>
-                      {language === 'ur' ? 'فائلیں یہاں ڈراپ کریں یا کلک کریں' : 'Drop files here or click to browse'}
-                    </p>
-                    <input
-                      type="file"
-                      multiple
-                      accept=".pdf"
-                      onChange={handleFileInput}
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <label htmlFor="file-upload">
-                      <Button className="cursor-pointer">
-                        <span className={language === 'ur' ? 'font-urdu' : 'font-inter'}>
-                          {language === 'ur' ? 'فائل منتخب کریں' : 'Select Files'}
-                        </span>
-                      </Button>
-                    </label>
-                  </div>
+                  <FileUploadArea
+                    onFileSelect={handleFileSelect}
+                    accept=".pdf"
+                    multiple={true}
+                    title={language === 'ur' ? 'پی ڈی ایف فائلیں اپ لوڈ کریں' : 'Upload PDF Files'}
+                    description={language === 'ur' ? 'فائلیں یہاں ڈراپ کریں یا کلک کریں' : 'Drop files here or click to browse'}
+                    buttonText={language === 'ur' ? 'فائل منتخب کریں' : 'Select Files'}
+                  />
                 </CardContent>
               </Card>
 
@@ -154,7 +128,7 @@ const MergePDF = () => {
                 <Card className="mb-8">
                   <CardHeader>
                     <CardTitle className={language === 'ur' ? 'font-urdu' : 'font-inter'}>
-                      {language === 'ur' ? 'منتخب فائلیں' : 'Selected Files'}
+                      {language === 'ur' ? `منتخب فائلیں (${files.length})` : `Selected Files (${files.length})`}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
